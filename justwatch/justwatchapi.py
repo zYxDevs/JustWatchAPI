@@ -52,7 +52,7 @@ class JustWatch:
 				
 	def search_for_item(self, query=None, **kwargs):
 
-		path = 'titles/{}/popular'.format(self.locale)
+		path = f'titles/{self.locale}/popular'
 		api_url = self.api_base_template.format(path=path)
 
 		if kwargs:
@@ -82,10 +82,10 @@ class JustWatch:
 			"person_id":null
 		}
 		for key, value in self.kwargs.items():
-			if key in payload.keys():
+			if key in payload:
 				payload[key] = value
 			else:
-				print('{} is not a valid keyword'.format(key))
+				print(f'{key} is not a valid keyword')
 		r = self.requests.post(api_url, json=payload, headers=HEADER)
 
 		# Client should deal with rate-limiting. JustWatch may send a 429 Too Many Requests response.
@@ -94,7 +94,7 @@ class JustWatch:
 		return r.json()
 
 	def get_providers(self):
-		path = 'providers/locale/{}'.format(self.locale)
+		path = f'providers/locale/{self.locale}'
 		api_url = self.api_base_template.format(path=path)
 		r = self.requests.get(api_url, headers=HEADER)
 		r.raise_for_status()   # Raises requests.exceptions.HTTPError if r.status_code != 200
@@ -102,7 +102,7 @@ class JustWatch:
 		return r.json()
         
 	def get_genres(self):
-		path = 'genres/locale/{}'.format(self.locale)
+		path = f'genres/locale/{self.locale}'
 		api_url = self.api_base_template.format(path=path)
 		r = self.requests.get(api_url, headers=HEADER)
 		r.raise_for_status()   # Raises requests.exceptions.HTTPError if r.status_code != 200
@@ -137,7 +137,7 @@ class JustWatch:
 	def get_season(self, season_id):
 
 		header = HEADER
-		api_url = 'https://apis.justwatch.com/content/titles/show_season/{}/locale/{}'.format(season_id, self.locale)
+		api_url = f'https://apis.justwatch.com/content/titles/show_season/{season_id}/locale/{self.locale}'
 		r = self.requests.get(api_url, headers=header)
 
 		# Client should deal with rate-limiting. JustWatch may send a 429 Too Many Requests response.
@@ -151,9 +151,9 @@ class JustWatch:
 			API returns 200 episodes (from newest to oldest) but takes a 'page' param.
 		'''
 		header = HEADER
-		api_url = 'https://apis.justwatch.com/content/titles/show/{}/locale/{}/newest_episodes'.format(show_id, self.locale)
+		api_url = f'https://apis.justwatch.com/content/titles/show/{show_id}/locale/{self.locale}/newest_episodes'
 		if page:
-			api_url += '?page={}'.format(page)
+			api_url += f'?page={page}'
 		r = self.requests.get(api_url, headers=header)
 
 		# Client should deal with rate-limiting. JustWatch may send a 429 Too Many Requests response.
@@ -175,14 +175,14 @@ class JustWatch:
 			"radius":20000
 		}
 		for key, value in self.kwargs_cinema.items():
-			if key in payload.keys():
+			if key in payload:
 				payload[key] = value
 			else:
-				print('{} is not a valid keyword'.format(key))
+				print(f'{key} is not a valid keyword')
 
 
 		header = HEADER
-		api_url = 'https://apis.justwatch.com/content/titles/{}/{}/showtimes'.format(content_type, title_id)
+		api_url = f'https://apis.justwatch.com/content/titles/{content_type}/{title_id}/showtimes'
 		r = self.requests.get(api_url, params=payload, headers=header)
 
 		r.raise_for_status()   # Raises requests.exceptions.HTTPError if r.status_code != 200
@@ -202,17 +202,14 @@ class JustWatch:
 			"radius":20000
 		}
 		for key, value in self.kwargs_cinema.items():
-			if key in payload.keys():
+			if key in payload:
 				payload[key] = value
-			elif key == 'date':
-                #ignore the date value if passed
-				pass
-			else:
-				print('{} is not a valid keyword'.format(key))
+			elif key != 'date':
+				print(f'{key} is not a valid keyword')
 
 
 		header = HEADER
-		api_url = 'https://apis.justwatch.com/content/cinemas/{}'.format(self.locale)
+		api_url = f'https://apis.justwatch.com/content/cinemas/{self.locale}'
 		r = self.requests.get(api_url, params=payload, headers=header)
 
 		r.raise_for_status()   # Raises requests.exceptions.HTTPError if r.status_code != 200
